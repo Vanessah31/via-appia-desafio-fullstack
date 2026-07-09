@@ -1,0 +1,15 @@
+﻿# Backend (Java/Maven)
+backend/target/
+backend/.idea/
+backend/*.iml
+backend/HELP.md
+
+# Frontend (Angular/Node) - vamos usar quando criarmos o frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Geral
+.DS_Store
+*.log
+.env
