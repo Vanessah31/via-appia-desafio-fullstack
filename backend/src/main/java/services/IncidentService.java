@@ -2,6 +2,7 @@ package com.viaappia.incidentsapi.services;
 
 import com.viaappia.incidentsapi.dtos.IncidentRequestDTO;
 import com.viaappia.incidentsapi.dtos.IncidentResponseDTO;
+import com.viaappia.incidentsapi.dtos.StatsResponseDTO;
 import com.viaappia.incidentsapi.entities.Incident;
 import com.viaappia.incidentsapi.exceptions.ResourceNotFoundException;
 import com.viaappia.incidentsapi.mappers.IncidentMapper;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.UUID;
 
 @Service
@@ -70,6 +74,29 @@ public class IncidentService {
             throw new ResourceNotFoundException("Incident não encontrado: " + id);
         }
         incidentRepository.deleteById(id);
+    }
+    public IncidentResponseDTO atualizarStatus(UUID id, Status novoStatus) {
+        Incident incident = incidentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Incident não encontrado: " + id));
+
+        incident.setStatus(novoStatus);
+        touchUpdate(incident);
+
+        incident = incidentRepository.save(incident);
+        return incidentMapper.toResponseDTO(incident);
+    }
+
+    public StatsResponseDTO obterStats(Status status, Prioridade prioridade, String q) {
+        Specification<Incident> filtro = IncidentSpecification.buildIncidentFilter(status, prioridade, q);
+        List<Incident> incidents = incidentRepository.findAll(filtro);
+
+        Map<String, Long> porStatus = incidents.stream()
+                .collect(Collectors.groupingBy(i -> i.getStatus().name(), Collectors.counting()));
+
+        Map<String, Long> porPrioridade = incidents.stream()
+                .collect(Collectors.groupingBy(i -> i.getPrioridade().name(), Collectors.counting()));
+
+        return new StatsResponseDTO(porStatus, porPrioridade, incidents.size());
     }
 
     public void touchUpdate(Incident incident) {

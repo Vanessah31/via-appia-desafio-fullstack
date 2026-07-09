@@ -2,6 +2,7 @@ package com.viaappia.incidentsapi.controllers;
 
 import com.viaappia.incidentsapi.dtos.IncidentRequestDTO;
 import com.viaappia.incidentsapi.dtos.IncidentResponseDTO;
+import com.viaappia.incidentsapi.dtos.StatusUpdateDTO;
 import com.viaappia.incidentsapi.services.IncidentService;
 import com.viaappia.incidentsapi.enums.Prioridade;
 import com.viaappia.incidentsapi.enums.Status;
@@ -53,5 +54,11 @@ public class IncidentController {
     public ResponseEntity<Void> excluir(@PathVariable UUID id) {
         incidentService.excluir(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<IncidentResponseDTO> atualizarStatus(@PathVariable UUID id,
+                                                               @Valid @RequestBody StatusUpdateDTO dto) {
+        return ResponseEntity.ok(incidentService.atualizarStatus(id, dto.status()));
     }
 }
