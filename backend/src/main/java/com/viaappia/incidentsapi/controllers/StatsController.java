@@ -4,11 +4,13 @@ import com.viaappia.incidentsapi.dtos.StatsResponseDTO;
 import com.viaappia.incidentsapi.enums.Prioridade;
 import com.viaappia.incidentsapi.enums.Status;
 import com.viaappia.incidentsapi.services.IncidentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 public class StatsController {
 

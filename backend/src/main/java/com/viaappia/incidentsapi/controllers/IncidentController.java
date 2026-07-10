@@ -6,6 +6,7 @@ import com.viaappia.incidentsapi.dtos.StatusUpdateDTO;
 import com.viaappia.incidentsapi.services.IncidentService;
 import com.viaappia.incidentsapi.enums.Prioridade;
 import com.viaappia.incidentsapi.enums.Status;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/incidents")
 public class IncidentController {
