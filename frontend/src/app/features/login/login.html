@@ -1,0 +1,46 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1>Via Appia — Gestão de Ocorrências</h1>
+    <p class="subtitle">Faça login para continuar</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="seuemail@exemplo.com"
+        />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="field-error">Informe um email válido.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Sua senha"
+        />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <span class="field-error">A senha é obrigatória.</span>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="alert-error">{{ errorMessage() }}</div>
+      }
+
+      <button type="submit" [disabled]="loading()">
+        @if (loading()) {
+          Entrando...
+        } @else {
+          Entrar
+        }
+      </button>
+    </form>
+  </div>
+</div>
