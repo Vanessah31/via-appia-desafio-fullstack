@@ -10,6 +10,9 @@ import com.viaappia.incidentsapi.repositories.IncidentRepository;
 import com.viaappia.incidentsapi.enums.Prioridade;
 import com.viaappia.incidentsapi.enums.Status;
 import com.viaappia.incidentsapi.specifications.IncidentSpecification;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,19 +35,24 @@ public class IncidentService {
         this.incidentMapper = incidentMapper;
     }
 
+    @Cacheable(value = "incidents", key = "{#status, #prioridade, #q, #pageable}")
     public Page<IncidentResponseDTO> listar(Status status, Prioridade prioridade, String q, Pageable pageable) {
         Specification<Incident> filtro = IncidentSpecification.buildIncidentFilter(status, prioridade, q);
         Page<Incident> page = incidentRepository.findAll(filtro, pageable);
         return page.map(incidentMapper::toResponseDTO);
-
     }
 
+    @Cacheable(value = "incidentById", key = "#id")
     public IncidentResponseDTO buscarPorId(UUID id) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident não encontrado: " + id));
         return incidentMapper.toResponseDTO(incident);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "incidents", allEntries = true),
+            @CacheEvict(value = "stats", allEntries = true)
+    })
     public IncidentResponseDTO criar(IncidentRequestDTO dto) {
         Incident incident = new Incident();
         incident.setId(UUID.randomUUID());
@@ -58,6 +66,11 @@ public class IncidentService {
         return incidentMapper.toResponseDTO(incident);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "incidents", allEntries = true),
+            @CacheEvict(value = "incidentById", key = "#id"),
+            @CacheEvict(value = "stats", allEntries = true)
+    })
     public IncidentResponseDTO atualizar(UUID id, IncidentRequestDTO dto) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident não encontrado: " + id));
@@ -69,12 +82,24 @@ public class IncidentService {
         return incidentMapper.toResponseDTO(incident);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "incidents", allEntries = true),
+            @CacheEvict(value = "incidentById", key = "#id"),
+            @CacheEvict(value = "stats", allEntries = true),
+            @CacheEvict(value = "commentsByIncident", key = "#id")
+    })
     public void excluir(UUID id) {
         if (!incidentRepository.existsById(id)) {
             throw new ResourceNotFoundException("Incident não encontrado: " + id);
         }
         incidentRepository.deleteById(id);
     }
+
+    @Caching(evict = {
+            @CacheEvict(value = "incidents", allEntries = true),
+            @CacheEvict(value = "incidentById", key = "#id"),
+            @CacheEvict(value = "stats", allEntries = true)
+    })
     public IncidentResponseDTO atualizarStatus(UUID id, Status novoStatus) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident não encontrado: " + id));
@@ -86,6 +111,7 @@ public class IncidentService {
         return incidentMapper.toResponseDTO(incident);
     }
 
+    @Cacheable(value = "stats", key = "{#status, #prioridade, #q}")
     public StatsResponseDTO obterStats(Status status, Prioridade prioridade, String q) {
         Specification<Incident> filtro = IncidentSpecification.buildIncidentFilter(status, prioridade, q);
         List<Incident> incidents = incidentRepository.findAll(filtro);

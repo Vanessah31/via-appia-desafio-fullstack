@@ -2,6 +2,7 @@ package com.viaappia.incidentsapi.config;
 
 import com.viaappia.incidentsapi.services.CustomUserDetailsService;
 import com.viaappia.incidentsapi.services.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,18 +43,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String email = jwtService.extractEmail(token);
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        try {
+            String email = jwtService.extractEmail(token);
 
-            if (jwtService.isTokenValid(token, userDetails.getUsername())) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+                if (jwtService.isTokenValid(token, userDetails.getUsername())) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (JwtException | IllegalArgumentException ex) {
+            // Token malformado, expirado ou inválido: apenas segue sem autenticar.
+            // O Spring Security vai barrar a requisição adiante com 401 padronizado
+            // (via CustomAuthenticationEntryPoint), em vez de estourar erro 500.
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

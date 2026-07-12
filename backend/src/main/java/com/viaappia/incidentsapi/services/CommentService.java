@@ -8,6 +8,9 @@ import com.viaappia.incidentsapi.exceptions.ResourceNotFoundException;
 import com.viaappia.incidentsapi.mappers.CommentMapper;
 import com.viaappia.incidentsapi.repositories.CommentRepository;
 import com.viaappia.incidentsapi.repositories.IncidentRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,6 +36,7 @@ public class CommentService {
         this.incidentService = incidentService;
     }
 
+    @Cacheable(value = "commentsByIncident", key = "#incidentId")
     public List<CommentResponseDTO> listarPorIncident(UUID incidentId) {
         return commentRepository.findByIncidentIdOrderByDataCriacaoAsc(incidentId)
                 .stream()
@@ -40,6 +44,11 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "commentsByIncident", key = "#incidentId"),
+            @CacheEvict(value = "incidentById", key = "#incidentId"),
+            @CacheEvict(value = "incidents", allEntries = true)
+    })
     public CommentResponseDTO criar(UUID incidentId, CommentRequestDTO dto) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident não encontrado: " + incidentId));
