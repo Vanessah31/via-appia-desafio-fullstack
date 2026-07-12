@@ -1,0 +1,91 @@
+<div class="page">
+  @if (loading()) {
+    <p class="info-text">Carregando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-text">{{ errorMessage() }}</p>
+  }
+
+  @if (incident(); as inc) {
+    <header class="topbar">
+      <button class="btn-secondary" (click)="goBack()">← Voltar</button>
+      <div class="header-actions">
+        @if (canWrite()) {
+          <a class="btn-primary" [routerLink]="['/incidents', incidentId(), 'edit']">Editar</a>
+          <button class="btn-danger" (click)="deleteIncident()">Excluir</button>
+        }
+      </div>
+    </header>
+
+    <section class="incident-card">
+      <h1>{{ inc.titulo }}</h1>
+      <p class="descricao">{{ inc.descricao }}</p>
+
+      <div class="meta-row">
+        <span class="badge prioridade-{{ inc.prioridade }}">{{ inc.prioridade }}</span>
+        <span class="badge status-{{ inc.status }}">{{ inc.status }}</span>
+      </div>
+
+      <div class="meta-info">
+        <div><strong>Responsável:</strong> {{ inc.responsavelEmail }}</div>
+        <div><strong>Aberta em:</strong> {{ inc.dataAbertura | date: 'dd/MM/yyyy HH:mm' }}</div>
+        <div><strong>Atualizada em:</strong> {{ inc.dataAtualizacao | date: 'dd/MM/yyyy HH:mm' }}</div>
+        @if (inc.tags.length > 0) {
+          <div><strong>Tags:</strong> {{ inc.tags.join(', ') }}</div>
+        }
+      </div>
+
+      @if (canWrite()) {
+        <div class="status-changer">
+          <label>Alterar status:</label>
+          @if (inc.status; as currentStatus) {
+            <select [value]="currentStatus" (change)="changeStatus($any($event.target).value)" [disabled]="updatingStatus()">
+              @for (opt of statusOptions; track opt) {
+                <option [value]="opt" [selected]="opt === currentStatus">{{ opt }}</option>
+              }
+            </select>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="comments-section">
+      <h2>Comentários ({{ comments().length }})</h2>
+
+      @for (comment of comments(); track comment.id) {
+        <div class="comment-card">
+          <div class="comment-header">
+            <strong>{{ comment.autor }}</strong>
+            <span>{{ comment.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <p>{{ comment.mensagem }}</p>
+        </div>
+      }
+
+      @if (comments().length === 0) {
+        <p class="info-text">Nenhum comentário ainda.</p>
+      }
+
+      <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+        <h3>Adicionar comentário</h3>
+
+        @if (commentError()) {
+          <p class="error-text">{{ commentError() }}</p>
+        }
+
+        <div class="field">
+          <label for="autor">Seu nome</label>
+          <input id="autor" type="text" formControlName="autor" placeholder="Seu nome" />
+        </div>
+
+        <div class="field">
+          <label for="mensagem">Mensagem</label>
+          <textarea id="mensagem" formControlName="mensagem" rows="3" placeholder="Escreva seu comentário..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Comentar</button>
+      </form>
+    </section>
+  }
+</div>

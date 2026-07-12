@@ -1,0 +1,68 @@
+<div class="page">
+  <header class="topbar">
+    <h1>{{ isEditMode() ? 'Editar Ocorrência' : 'Nova Ocorrência' }}</h1>
+  </header>
+
+  @if (loading()) {
+    <p class="info-text">Carregando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-text">{{ errorMessage() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="incident-form">
+    <div class="field">
+      <label for="titulo">Título *</label>
+      <input id="titulo" type="text" formControlName="titulo" placeholder="Resumo da ocorrência" />
+      @if (form.get('titulo')?.invalid && form.get('titulo')?.touched) {
+        <span class="field-error">Título deve ter entre 5 e 120 caracteres.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="descricao">Descrição</label>
+      <textarea id="descricao" formControlName="descricao" rows="4" placeholder="Detalhes da ocorrência"></textarea>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="prioridade">Prioridade *</label>
+        <select id="prioridade" formControlName="prioridade">
+          @for (opt of prioridadeOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="status">Status *</label>
+        <select id="status" formControlName="status">
+          @for (opt of statusOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="responsavelEmail">Email do Responsável *</label>
+      <input id="responsavelEmail" type="email" formControlName="responsavelEmail" placeholder="responsavel@exemplo.com" />
+      @if (form.get('responsavelEmail')?.invalid && form.get('responsavelEmail')?.touched) {
+        <span class="field-error">Informe um email válido.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="tags">Tags (separadas por vírgula)</label>
+      <input id="tags" type="text" formControlName="tags" placeholder="bug, login, urgente" />
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="cancel()">Cancelar</button>
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        {{ isEditMode() ? 'Salvar Alterações' : 'Criar Ocorrência' }}
+      </button>
+    </div>
+  </form>
+</div>

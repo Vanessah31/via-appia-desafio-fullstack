@@ -1,0 +1,159 @@
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.incident-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    color: #1e3a5f;
+    margin: 0 0 0.5rem;
+  }
+
+  .descricao {
+    color: #4b5563;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+  }
+}
+
+.meta-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.meta-info {
+  font-size: 0.85rem;
+  color: #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.status-changer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+
+  select {
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+  }
+}
+
+.comments-section h2 {
+  font-size: 1.1rem;
+  color: #1e3a5f;
+  margin-bottom: 1rem;
+}
+
+.comment-card {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 0.3rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #1f2937;
+  }
+}
+
+.comment-form {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-top: 1rem;
+
+  h3 {
+    font-size: 0.95rem;
+    color: #374151;
+    margin: 0 0 0.75rem;
+  }
+}
+
+.field {
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #374151;
+  }
+
+  input, textarea {
+    padding: 0.55rem 0.7rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+  }
+}
+
+.btn-primary, .btn-secondary, .btn-danger {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary { background: #1e3a5f; color: white; &:hover { background: #16283f; } }
+.btn-secondary { background: #e5e7eb; color: #374151; &:hover { background: #d1d5db; } }
+.btn-danger { background: #fee2e2; color: #991b1b; &:hover { background: #fecaca; } }
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.prioridade-BAIXA { background: #dbeafe; color: #1e40af; }
+.prioridade-MEDIA { background: #fef3c7; color: #92400e; }
+.prioridade-ALTA { background: #fee2e2; color: #991b1b; }
+.status-ABERTA { background: #dbeafe; color: #1e40af; }
+.status-EM_ANDAMENTO { background: #fef3c7; color: #92400e; }
+.status-RESOLVIDA { background: #dcfce7; color: #166534; }
+.status-CANCELADA { background: #f3f4f6; color: #4b5563; }
+
+.info-text { text-align: center; color: #6b7280; padding: 1rem; }
+.error-text { text-align: center; color: #dc2626; padding: 0.75rem; background: #fef2f2; border-radius: 8px; margin-bottom: 1rem; }
