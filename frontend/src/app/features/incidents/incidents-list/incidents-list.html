@@ -1,4 +1,118 @@
-<div style="padding: 2rem;">
-  <h1>Lista de Incidents (em construção)</h1>
-  <p>Se você está vendo essa tela, o login e o guard de rota funcionaram! 🎉</p>
+<div class="page">
+  <header class="topbar">
+    <h1>Gestão de Ocorrências</h1>
+    <div class="user-info">
+      <span>{{ authService.currentEmail() }} ({{ authService.currentRole() }})</span>
+      <button class="btn-secondary" (click)="logout()">Sair</button>
+    </div>
+  </header>
+
+  <!-- Cards de Stats -->
+  @if (stats()) {
+    <section class="stats-cards">
+      <div class="stat-card total">
+        <span class="stat-value">{{ stats()!.total }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-card aberta">
+        <span class="stat-value">{{ countFor(stats()!.porStatus, 'ABERTA') }}</span>
+        <span class="stat-label">Abertas</span>
+      </div>
+      <div class="stat-card andamento">
+        <span class="stat-value">{{ countFor(stats()!.porStatus, 'EM_ANDAMENTO') }}</span>
+        <span class="stat-label">Em Andamento</span>
+      </div>
+      <div class="stat-card resolvida">
+        <span class="stat-value">{{ countFor(stats()!.porStatus, 'RESOLVIDA') }}</span>
+        <span class="stat-label">Resolvidas</span>
+      </div>
+      <div class="stat-card cancelada">
+        <span class="stat-value">{{ countFor(stats()!.porStatus, 'CANCELADA') }}</span>
+        <span class="stat-label">Canceladas</span>
+      </div>
+    </section>
+  }
+
+  <!-- Filtros -->
+  <section class="filters">
+    <div class="filter-field">
+      <label>Buscar</label>
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Título ou descrição..." (keyup.enter)="applyFilters()" />
+    </div>
+
+    <div class="filter-field">
+      <label>Status</label>
+      <select [(ngModel)]="statusFilter">
+        <option value="">Todos</option>
+        @for (opt of statusOptions; track opt) {
+          <option [value]="opt">{{ opt }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-field">
+      <label>Prioridade</label>
+      <select [(ngModel)]="prioridadeFilter">
+        <option value="">Todas</option>
+        @for (opt of prioridadeOptions; track opt) {
+          <option [value]="opt">{{ opt }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-primary" (click)="applyFilters()">Filtrar</button>
+      <button class="btn-secondary" (click)="clearFilters()">Limpar</button>
+    </div>
+
+    @if (canWrite()) {
+      <a class="btn-primary btn-new" routerLink="/incidents/new">+ Nova Ocorrência</a>
+    }
+  </section>
+
+  <!-- Estado de carregamento / erro -->
+  @if (loading()) {
+    <p class="info-text">Carregando...</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-text">{{ errorMessage() }}</p>
+  }
+
+  <!-- Tabela -->
+  @if (!loading() && incidents().length > 0) {
+    <table class="incidents-table">
+      <thead>
+        <tr>
+          <th (click)="changeSort('titulo')">Título</th>
+          <th (click)="changeSort('prioridade')">Prioridade</th>
+          <th (click)="changeSort('status')">Status</th>
+          <th>Responsável</th>
+          <th (click)="changeSort('dataAbertura')">Data Abertura</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (incident of incidents(); track incident.id) {
+          <tr [routerLink]="['/incidents', incident.id]" class="clickable-row">
+            <td>{{ incident.titulo }}</td>
+            <td><span class="badge prioridade-{{ incident.prioridade }}">{{ incident.prioridade }}</span></td>
+            <td><span class="badge status-{{ incident.status }}">{{ incident.status }}</span></td>
+            <td>{{ incident.responsavelEmail }}</td>
+            <td>{{ incident.dataAbertura | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- Paginação -->
+    <div class="pagination">
+      <button [disabled]="page() === 0" (click)="goToPage(page() - 1)">Anterior</button>
+      <span>Página {{ page() + 1 }} de {{ totalPages() }} ({{ totalElements() }} itens)</span>
+      <button [disabled]="page() + 1 >= totalPages()" (click)="goToPage(page() + 1)">Próxima</button>
+    </div>
+  }
+
+  @if (!loading() && incidents().length === 0 && !errorMessage()) {
+    <p class="info-text">Nenhuma ocorrência encontrada.</p>
+  }
 </div>

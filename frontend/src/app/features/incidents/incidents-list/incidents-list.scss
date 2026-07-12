@@ -1,0 +1,226 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.4rem;
+    color: #1e3a5f;
+    margin: 0;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #4b5563;
+  }
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  .stat-value {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+  }
+
+  &.aberta .stat-value { color: #2563eb; }
+  &.andamento .stat-value { color: #d97706; }
+  &.resolvida .stat-value { color: #16a34a; }
+  &.cancelada .stat-value { color: #dc2626; }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  .filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input, select {
+      padding: 0.5rem 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      min-width: 150px;
+    }
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-new {
+    margin-left: auto;
+    text-decoration: none;
+  }
+}
+
+.btn-primary, .btn-secondary {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #1e3a5f;
+  color: white;
+
+  &:hover {
+    background: #16283f;
+  }
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+
+  &:hover {
+    background: #d1d5db;
+  }
+}
+
+.incidents-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+  }
+
+  .clickable-row {
+    cursor: pointer;
+
+    &:hover {
+      background: #f9fafb;
+    }
+  }
+}
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.prioridade-BAIXA { background: #dbeafe; color: #1e40af; }
+.prioridade-MEDIA { background: #fef3c7; color: #92400e; }
+.prioridade-ALTA { background: #fee2e2; color: #991b1b; }
+
+.status-ABERTA { background: #dbeafe; color: #1e40af; }
+.status-EM_ANDAMENTO { background: #fef3c7; color: #92400e; }
+.status-RESOLVIDA { background: #dcfce7; color: #166534; }
+.status-CANCELADA { background: #f3f4f6; color: #4b5563; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+
+  button {
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: white;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: #f3f4f6;
+    }
+  }
+}
+
+.info-text {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+}
+
+.error-text {
+  text-align: center;
+  color: #dc2626;
+  padding: 1rem;
+  background: #fef2f2;
+  border-radius: 8px;
+}
