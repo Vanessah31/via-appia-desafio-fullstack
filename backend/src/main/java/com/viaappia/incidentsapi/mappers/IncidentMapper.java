@@ -35,15 +35,24 @@ public class IncidentMapper {
         incident.setTags(tagsListToString(dto.tags()));
     }
 
-    private String tagsListToString(List<String> tags) {
-        if (tags == null || tags.isEmpty()) {
-            return "";
+    /**
+     * Item de DRY (backend, item A do documento): normalizeTags(List<String>).
+     * Remove nulos/vazios, aplica trim, converte para minúsculas e remove duplicatas.
+     * Reutilizado em criar e editar Incident.
+     */
+    public List<String> normalizeTags(List<String> tags) {
+        if (tags == null) {
+            return List.of();
         }
         return tags.stream()
                 .filter(t -> t != null && !t.isBlank())
                 .map(t -> t.trim().toLowerCase())
                 .distinct()
-                .collect(Collectors.joining(","));
+                .collect(Collectors.toList());
+    }
+
+    private String tagsListToString(List<String> tags) {
+        return String.join(",", normalizeTags(tags));
     }
 
     private List<String> tagsStringToList(String tags) {

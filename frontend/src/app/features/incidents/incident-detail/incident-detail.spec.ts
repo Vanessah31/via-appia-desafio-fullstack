@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 import { IncidentDetail } from './incident-detail';
 
 describe('IncidentDetail', () => {
@@ -9,11 +10,19 @@ describe('IncidentDetail', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [IncidentDetail],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { paramMap: { get: () => 'fake-id' } }
+          }
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(IncidentDetail);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
