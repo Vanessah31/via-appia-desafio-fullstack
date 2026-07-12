@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,20 @@ public class GlobalExceptionHandler {
                 details
         );
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String tipoEsperado = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "esperado";
+
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "Parâmetro inválido: '" + ex.getName() + "' deve ser do tipo " + tipoEsperado + ".",
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)
