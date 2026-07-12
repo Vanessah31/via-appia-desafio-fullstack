@@ -22,12 +22,18 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Value("${app.cors.allowed-origins}")
     private List<String> allowedOrigins;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
+                          CustomAuthenticationEntryPoint authenticationEntryPoint,
+                          CustomAccessDeniedHandler accessDeniedHandler) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -36,8 +42,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        // Rotas públicas: login e Swagger
                         .requestMatchers(
                                 "/auth/login",
                                 "/swagger-ui/**",
@@ -45,17 +54,14 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // Leitura (GET): qualquer usuário autenticado, dos dois perfis
                         .requestMatchers(HttpMethod.GET, "/incidents/**").hasAnyRole("READ_ONLY", "READ_WRITE")
                         .requestMatchers(HttpMethod.GET, "/stats/**").hasAnyRole("READ_ONLY", "READ_WRITE")
 
-                        // Escrita: só quem tem perfil READ_WRITE
                         .requestMatchers(HttpMethod.POST, "/incidents/**").hasRole("READ_WRITE")
                         .requestMatchers(HttpMethod.PUT, "/incidents/**").hasRole("READ_WRITE")
                         .requestMatchers(HttpMethod.DELETE, "/incidents/**").hasRole("READ_WRITE")
                         .requestMatchers(HttpMethod.PATCH, "/incidents/**").hasRole("READ_WRITE")
 
-                        // Qualquer outra requisição precisa estar autenticada
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
